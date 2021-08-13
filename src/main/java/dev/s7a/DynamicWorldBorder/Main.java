@@ -31,14 +31,15 @@ public class Main extends JavaPlugin implements Listener {
             Player player = Bukkit.getPlayer(args[0]);
             if (player != null) {
                 centerPlayer = player;
-                World world = player.getWorld();
                 scheduler = Bukkit.getScheduler().runTaskTimer(this, () -> {
+                    World world = player.getWorld();
                     if (player.isOnline()) {
                         world.getWorldBorder().setCenter(player.getLocation());
                     } else {
                         getLogger().info(player.getName() + " がログアウトしたので自動変更を停止しました");
                     }
                 }, 0, 20);
+                sender.sendMessage("[DynamicWorldBorder] 中心プレイヤーを " + player.getName() + " に変更しました");
             } else {
                 sender.sendMessage("[DynamicWorldBorder] 存在しないプレイヤーです");
             }
