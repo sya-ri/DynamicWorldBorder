@@ -5,18 +5,24 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.util.Objects;
 
 @SuppressWarnings("unused")
-public class Main extends JavaPlugin {
+public class Main extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         Objects.requireNonNull(getCommand("dynamicworldborder")).setExecutor(this);
+        getServer().getPluginManager().registerEvents(this, this);
     }
 
+    Player centerPlayer;
     BukkitTask scheduler;
 
     @Override
@@ -24,6 +30,7 @@ public class Main extends JavaPlugin {
         if (args.length == 1) {
             Player player = Bukkit.getPlayer(args[0]);
             if (player != null) {
+                centerPlayer = player;
                 World world = player.getWorld();
                 scheduler = Bukkit.getScheduler().runTaskTimer(this, () -> {
                     if (player.isOnline()) {
@@ -39,9 +46,24 @@ public class Main extends JavaPlugin {
             if (scheduler != null) {
                 scheduler.cancel();
             }
+            centerPlayer = null;
             scheduler = null;
             sender.sendMessage("[DynamicWorldBorder] 自動変更を停止しました");
         }
         return true;
+    }
+
+    @EventHandler
+    public void on(PlayerSpawnLocationEvent event) {
+        if (centerPlayer != null) {
+            event.setSpawnLocation(centerPlayer.getLocation());
+        }
+    }
+
+    @EventHandler
+    public void on(PlayerRespawnEvent event) {
+        if (centerPlayer != null) {
+            event.setRespawnLocation(centerPlayer.getLocation());
+        }
     }
 }
