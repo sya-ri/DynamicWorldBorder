@@ -21,4 +21,10 @@ configure<BukkitPluginDescription> {
     main = "dev.s7a.DynamicWorldBorder.Main"
     apiVersion = "1.17"
     author = "sya_ri"
+    commands {
+        register("dynamicworldborder") {
+            aliases = listOf("dwb")
+            permission = "dynamicworldborder.command"
+        }
+    }
 }
